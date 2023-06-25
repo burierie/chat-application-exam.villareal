@@ -1,0 +1,17 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server2.py",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "uvicorn main:app --reload"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fastapi": "^0.0.8",
+    "websockets": "^0.2.0"
+  }
+}
