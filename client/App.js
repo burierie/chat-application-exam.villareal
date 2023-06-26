@@ -22,14 +22,11 @@ const App = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log('Room created:', data);
-        // Handle the response data or update state as needed
       })
       .catch((error) => {
         console.error('Error creating room:', error);
-        // Handle the error appropriately
       });
 
-    // Clear the input field
     setRoomName('');
   };
 
@@ -50,14 +47,11 @@ const App = () => {
       .then((response) => response.json())
       .then((data) => {
         console.log('Room joined:', data);
-        // Handle the response data or update state as needed
       })
       .catch((error) => {
         console.error('Error joining room:', error);
-        // Handle the error appropriately
       });
 
-    // Clear the input field
     setJoinRoomName('');
   };
 
@@ -65,7 +59,7 @@ const App = () => {
     <View>
       <Text>Create a Room:</Text>
       <TextInput
-        placeholder="Enter room name"
+        placeholder="Enter new room name"
         value={roomName}
         onChangeText={(text) => setRoomName(text)}
       />
@@ -73,7 +67,7 @@ const App = () => {
 
       <Text>or join room</Text>
       <TextInput
-        placeholder="Enter room name"
+        placeholder="Enter existing room name"
         value={joinRoomName}
         onChangeText={(text) => setJoinRoomName(text)}
       />

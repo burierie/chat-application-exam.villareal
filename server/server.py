@@ -14,31 +14,30 @@ app.add_middleware(
 )
 
 # Store the active rooms
-rooms = {}
+chatRooms = {}
 
-
-@app.websocket("/ws/{roomname}")
-async def websocket_endpoint(websocket: WebSocket, roomname: str, user_id: str):
+@app.websocket("/ws/{roomName}")
+async def websocket_endpoint(websocket: WebSocket, roomName: str):
     await websocket.accept()
 
-    room = rooms.get(roomname)
+    room = chatRooms.get(roomName)
     if room is None:
         return JSONResponse({"message": "Room does not exist"}, status_code=404)
 
     room["participants"].add(websocket)
-    await broadcast_message(roomname, f"User {user_id} joined the room")
+    await broadcast_message(roomName, "A user joined the room")
 
     try:
         while True:
             message = await websocket.receive_text()
-            await broadcast_message(roomname, f"User {user_id}: {message}")
+            await broadcast_message(roomName, message)
     finally:
         room["participants"].remove(websocket)
-        await broadcast_message(roomname, f"User {user_id} left the room")
+        await broadcast_message(roomName, "A user left the room")
 
 
-async def broadcast_message(roomname: str, message: str):
-    room = rooms.get(roomname)
+async def broadcast_message(roomName: str, message: str):
+    room = chatRooms.get(roomName)
     if room is None:
         return
 
@@ -46,29 +45,33 @@ async def broadcast_message(roomname: str, message: str):
         await participant.send_text(message)
 
 
-@app.post("/create_room/{roomname}")
-async def create_room(roomname: str):
-    if roomname in rooms:
+@app.post("/create_room/{roomName}")
+async def create_room(roomName: str):
+    if not roomName:
+        return JSONResponse({"message": "Room ID cannot be empty"}, status_code=400)
+
+    if roomName in chatRooms:
         return JSONResponse({"message": "Room already exists"}, status_code=400)
 
-    rooms[roomname] = {"participants": set()}
-    return {"message": "Room created"}
+    chatRooms[roomName] = {"participants": set()}
+    return {"message": "Room created.."}
 
-@app.post("/join_room/{roomname}")
-async def join_room(roomname: str):
-    room = rooms.get(roomname)
+@app.post("/join_room/{roomName}")
+async def join_room(roomName: str):
+    if not roomName:
+        return JSONResponse({"message": "Room ID cannot be empty"}, status_code=400)
+
+    room = chatRooms[roomName]
     if room is None:
         return JSONResponse({"message": "Room does not exist"}, status_code=404)
-
-    room["participants"].add("New Participant")  # Replace "New Participant" with the actual participant you want to add
-
+    
+    room["participants"].add("New Participant")
     return {"message": "Joined the room"}
-
 
 @app.get("/")
 async def index():
     return {"message": "Welcome to the chat room API"}
 
 
-if __name__ == "_main_":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000) 

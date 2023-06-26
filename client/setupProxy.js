@@ -8,4 +8,12 @@ export default function (app) {
       changeOrigin: true,
     })
   );
+
+  app.use(
+    '/join_room/{roomName}',
+    createProxyMiddleware({
+      target: 'http://localhost:8000',
+      changeOrigin: true,
+    })
+  );
 };
